@@ -18,6 +18,22 @@ exports.getAllScreams = (req, res) => {
         .catch(err => console.error(err));
 }
 
+exports.getAllUsers = (req, res) => {
+    db
+        .collection('users')
+        .get()
+        .then(data =>{
+            let users = []
+            data.forEach(doc => {
+                users.push({
+                    ...doc.data()
+                });
+            })
+            return res.json(users);
+        })
+        .catch(err => console.error(err));
+}
+
 exports.PostOneScream = (req,res) => {
     if (req.body.body.trim()=== ''){
         return res.status(400).json({body: 'Body shall not be empty' })

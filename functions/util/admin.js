@@ -1,6 +1,6 @@
 
 const admin = require('firebase-admin');
-const adminKey = require('./../../keys/firebase-creds.json')
+const adminKey = require('./../../keys/firebase-creds.json');
 
 
 //initializing admin
@@ -10,4 +10,4 @@ admin.initializeApp({credential: admin.credential.cert(adminKey)});
 const db=admin.firestore();
 
 
-module.exports = {admin, db}
+module.exports = { admin, db };

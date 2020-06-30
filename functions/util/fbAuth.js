@@ -1,7 +1,6 @@
-const {admin} = require('./admin')
+const {admin, db} = require('./admin')
 
-//middleware for post request
-//verifies token and adds user to the posted scream
+
 module.exports = (req, res, next) => {
     let idToken
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer ')){
