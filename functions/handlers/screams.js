@@ -51,7 +51,9 @@ exports.PostOneScream = (req,res) => {
         .collection('screams')
         .add(newScream)
         .then(doc => {
-            res.json(newScream);
+            const resScream = newScream
+            resScream.screamID = doc.id;
+            res.json(resScream);
         })
         .catch(err => {
             res.status(500).json({error: 'wtf just happened'});
@@ -109,9 +111,10 @@ exports.commentOnScream = (req, res) => {
             }
             return doc.ref.update({commentCount: doc.data().commentCount +1})
         })
-        .then(() =>{
-            res.json(newComment)
+        .then(() => {
+            return db.collection('comments').add(newComment);
         })
+        .then(() => res.json(newComment))
         .catch(err => {
             console.error(err);
             return res.status(500).json({error: 'Something went wrong'});
