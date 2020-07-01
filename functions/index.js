@@ -52,7 +52,7 @@ app.post('/signup', SignUp)
 //login route
 app.post('/login', Login);
 
-//get all users *prod mode only*
+//get authenticated user details
 app.get('/user', FBAuth, getAuthenticatedUser)
 
 //get all users *prod mode only*
@@ -69,3 +69,35 @@ app.post('/user', FBAuth, AddUserDetails)
 
 //exporting app & setting region to decrease latency
 exports.api = functions.region('europe-west1').https.onRequest(app);
+
+
+const {
+    NotificationOnLike,
+    NotificationOnUnlike,
+    NotificationOnComment
+} = require('./handlers/notifications');
+
+
+exports.createNotificationOnLike = functions
+    .region('europe-west1')
+    .firestore
+    .document('likes/{id}')
+    .onCreate(snapshot => {
+        NotificationOnLike(snapshot)
+})
+
+exports.deleteNotificationOnUnlike = functions
+    .region('europe-west1')
+    .firestore
+    .document('likes/{id}')
+    .onDelete(snapshot => {
+        NotificationOnUnlike(snapshot)
+})
+
+exports.createNotificationOnComment = functions
+    .region('europe-west1')
+    .firestore
+    .document('comments/{id}')
+    .onCreate(snapshot => {
+        NotificationOnComment(snapshot)
+})

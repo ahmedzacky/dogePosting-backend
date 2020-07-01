@@ -1,16 +1,19 @@
 const {db, admin} = require('./../util/admin')
 const firebase = require('firebase')
-const firebaseConfig = require('./../../keys/firebase-config.json')
+const firebaseConfig = require('../keys/firebase-config')
 
 firebase.initializeApp(firebaseConfig);
 
-const { validateSignUpData, validateLoginData, reduceUserDetails } = require('../util/validators')
+const { 
+    validateSignUpData, 
+    validateLoginData, 
+    reduceUserDetails 
+} = require('../util/validators')
 
 //default user behaviour in firebase db only stores email and password
 //we perform error checks (empty user/password/handle) and valid email
 //we check for duplicate userID
-// if all is valid we create a new user and set username(handle) as users collection ID
-//TODO: add profile pic and shit 
+// if all is valid we create a new user and set username(handle) as users collection's ID
 exports.SignUp =  (req, res) => {
     const newUser = {
         email: req.body.email,
@@ -63,9 +66,8 @@ exports.SignUp =  (req, res) => {
         })
 }
 
-//responds bad request for empty email and password
 //responds forbidden for wrong password
-//responds with token to correct credentials
+//responds with token only to correct credentials
 exports.Login = (req,res) => {
     const user = {
         email: req.body.email,
@@ -111,16 +113,33 @@ exports.getAuthenticatedUser= (req,res) => {
         .then(doc => {
             userData.credentials = doc.data();
             return db
-                .collection('likes')
-                .where('userHandle', '==', req.user.handle)
-                .get()
+                    .collection('likes')
+                    .where('userHandle', '==', req.user.handle)
+                    .get()
         })
         .then(data => {
+            if(data)
             userData.likes = []
             data.forEach(doc => {
-                userData.likes.push(doc.data)
+                userData.likes.push(doc.data())
             });
-            res.json({userData})
+            return db
+                    .collection('notifications')
+                    .where('recepient', '==', req.user.handle)
+                    .orderBy('createdAt', 'desc')
+                    .limit(10)
+                    .get()
+        })
+        .then(data => {
+            console.log(data)
+            userData.notifications = []
+            data.forEach(doc => {
+                userData.notifications.push({
+                    notificationID : doc.id,
+                    ...doc.data()
+                })
+            })
+            return res.json(userData)
         })
         .catch(err =>{
             console.error(err)

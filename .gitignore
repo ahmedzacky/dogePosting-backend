@@ -46,8 +46,6 @@ build/Release
 # Dependency directories
 node_modules/
 
-#firebase keys
-keys/
 
 # Optional npm cache directory
 .npm
