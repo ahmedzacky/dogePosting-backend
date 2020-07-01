@@ -4,7 +4,7 @@ const firebaseConfig = require('./../../keys/firebase-config.json')
 
 firebase.initializeApp(firebaseConfig);
 
-const { validateSignUpData, validateLoginData } = require('../util/validators')
+const { validateSignUpData, validateLoginData, reduceUserDetails } = require('../util/validators')
 
 //default user behaviour in firebase db only stores email and password
 //we perform error checks (empty user/password/handle) and valid email
@@ -91,7 +91,45 @@ exports.Login = (req,res) => {
         }); 
 }
 
+//Add user detail
+exports.AddUserDetails = (req,res) => {
+    let userDetails = reduceUserDetails(req.body)
+    db.doc(`/users/${req.user.handle}`).update(userDetails)
+        .then(() => res.json({message: "Thanks for the data 😜"}))
+        .catch(err => {
+            console.error(err);
+            return res.status(500).json({error: err.code})
+        })
+}
 
+
+
+//Get own user details
+exports.getAuthenticatedUser= (req,res) => {
+    let userData = {}
+    db.doc(`/users/${req.user.handle}`).get()
+        .then(doc => {
+            userData.credentials = doc.data();
+            return db
+                .collection('likes')
+                .where('userHandle', '==', req.user.handle)
+                .get()
+        })
+        .then(data => {
+            userData.likes = []
+            data.forEach(doc => {
+                userData.likes.push(doc.data)
+            });
+            res.json({userData})
+        })
+        .catch(err =>{
+            console.error(err)
+            return res.status(500).json({error : err.code})
+        })
+
+}
+
+//Upload profile image
 exports.UploadImage = (req, res) => {
     const BusBoy = require('busboy')
     const path = require('path')
@@ -99,9 +137,7 @@ exports.UploadImage = (req, res) => {
     const fs = require('fs')
     const { v4: uuidv4 } = require('uuid');
 
-
     const busboy = new BusBoy ({ headers: req.headers })
-    
     let imageFileName;
     let imageToBeUploaded = {}
     busboy.on('file', (fieldname, file, filename, encoding, mimetype)=> {

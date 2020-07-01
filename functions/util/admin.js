@@ -1,6 +1,5 @@
-
 const admin = require('firebase-admin');
-const adminKey = require('./../../keys/firebase-creds.json');
+const adminKey = require('../../keys/firebase-creds');
 
 
 //initializing admin
