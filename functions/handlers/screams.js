@@ -42,6 +42,7 @@ exports.PostOneScream = (req,res) => {
     const newScream = {
         body: req.body.body,
         userHandle: req.user.handle,
+        userImage: req.user.imageUrl,
         createdAt: new Date().toISOString(),
         likeCount: 0,
         commentCount: 0
@@ -80,7 +81,6 @@ exports.getScream = (req, res) => {
         .then(data => {
             screamData.comments = []
             data.forEach(comment => {
-                console.log(comment)
                 screamData.comments.push(comment.data())
             })
             return res.json(screamData)
@@ -222,3 +222,4 @@ exports.DeleteScream = (req, res) => {
         })
 
 }
+
