@@ -22,6 +22,10 @@ const {
     MarkNotificationsRead
 } = require('./handlers/users')
 
+const cors = require('cors')
+
+app.use(cors())
+
 
 /*                     SCREAM ROUTES                      */
 //get route for all screams

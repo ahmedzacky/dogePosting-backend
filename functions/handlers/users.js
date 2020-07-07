@@ -184,7 +184,6 @@ exports.UploadImage = (req, res) => {
     const path = require('path')
     const os = require('os')
     const fs = require('fs')
-    const { v4: uuidv4 } = require('uuid');
 
     const busboy = new BusBoy ({ headers: req.headers })
     let imageFileName;
@@ -196,8 +195,9 @@ exports.UploadImage = (req, res) => {
         // my.image.png
         // we split into words by "." then take the last one
         const imageExtension = filename.split('.').pop()
-
-        imageFileName = `${uuidv4()}.${imageExtension}`
+            
+        //why waste data
+        imageFileName = `${req.user.handle}-${new Date().getTime()}.${imageExtension}`
         const filepath = path.join(os.tmpdir(), imageFileName)
         imageToBeUploaded = {filepath, mimetype}
         file.pipe(fs.createWriteStream(filepath))
