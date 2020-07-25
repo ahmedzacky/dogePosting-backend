@@ -62,9 +62,6 @@ app.post('/login', Login);
 //get authenticated user details
 app.get('/user', FBAuth, getAuthenticatedUser)
 
-//get all users *prod mode only*
-app.get('/users', getAllUsers)
-
 //upload profile pic route
 app.post('/user/image', FBAuth, UploadImage)
 
@@ -80,7 +77,7 @@ app.get('/notifications', FBAuth, MarkNotificationsRead)
 
 
 //exporting app endpoints & setting region to decrease latency
-exports.api = functions.region('europe-west1').https.onRequest(app);
+exports.api = functions.region('europe-west3').https.onRequest(app);
 
 //notification db triggers
 const {
@@ -91,7 +88,7 @@ const {
 
 //like notification
 exports.createNotificationOnLike = functions
-    .region('europe-west1')
+    .region('europe-west3')
     .firestore
     .document('likes/{id}')
     .onCreate(snapshot => {
@@ -100,7 +97,7 @@ exports.createNotificationOnLike = functions
 
 //remove like notification on unlike
 exports.deleteNotificationOnUnlike = functions
-    .region('europe-west1')
+    .region('europe-west3')
     .firestore
     .document('likes/{id}')
     .onDelete(snapshot => {
@@ -109,7 +106,7 @@ exports.deleteNotificationOnUnlike = functions
 
 //comment notification
 exports.createNotificationOnComment = functions
-    .region('europe-west1')
+    .region('europe-west3')
     .firestore
     .document('comments/{id}')
     .onCreate(snapshot => {
@@ -118,7 +115,7 @@ exports.createNotificationOnComment = functions
 
 //comment notification
 exports.onUserImageChange = functions
-    .region('europe-west1')
+    .region('europe-west3')
     .firestore
     .document('users/{userID}')
     .onUpdate(change => {
@@ -141,7 +138,7 @@ exports.onUserImageChange = functions
 
 //delete comments, likes, notifications on scream delete
 exports.onScreamDelete = functions
-    .region('europe-west1')
+    .region('europe-west3')
     .firestore
     .document('screams/{screamID}')
     .onDelete((_snapshot, context) => {

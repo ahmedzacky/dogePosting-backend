@@ -18,22 +18,6 @@ exports.getAllScreams = (req, res) => {
         .catch(err => console.error(err));
 }
 
-exports.getAllUsers = (req, res) => {
-    db
-        .collection('users')
-        .get()
-        .then(data =>{
-            let users = []
-            data.forEach(doc => {
-                users.push({
-                    ...doc.data()
-                });
-            })
-            return res.json(users);
-        })
-        .catch(err => console.error(err));
-}
-
 //adds user to the posted scream (from the authentication middleware(FBAuth))
 exports.PostOneScream = (req,res) => {
     if (req.body.body.trim()=== ''){
@@ -94,7 +78,7 @@ exports.getScream = (req, res) => {
 //comment on a scream
 exports.commentOnScream = (req, res) => {
     if(req.body.body.trim() === ''){
-        return res.status(400).json({error: 'Must not be empty'})
+        return res.status(400).json({comment: 'Must not be empty'})
     }
     const newComment = {
         body: req.body.body,
