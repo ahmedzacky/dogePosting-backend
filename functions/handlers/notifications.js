@@ -8,25 +8,15 @@ const {db} = require('./../util/admin')
 exports.NotificationOnLike = (snapshot) => {
     db.doc(`/screams/${snapshot.data().screamID}`).get()
     .then(doc =>{
-        if(doc.exists && doc.data().userHandle !== snapshot.data().handle){
+        if(doc.exists && doc.data().userHandle !== snapshot.data().userHandle){
             return db.doc(`/notifications/${snapshot.id}`).set({
                 createdAt : new Date().toISOString(),
                 recepient: doc.data().userHandle,
                 sender: snapshot.data().userHandle,
                 type: 'like',
                 read: false,
-                screamID: doc.id
-            });
-        }
-        
-        else if(doc.exists && doc.data().userHandle === snapshot.data().handle){
-            return db.doc(`/notifications/${snapshot.id}`).set({
-                createdAt : new Date().toISOString(),
-                recepient: doc.data().userHandle,
-                sender: 'A retard 😬',
-                type: 'like',
-                read: false,
-                screamID: doc.id
+                screamID: doc.id,
+                notificationID: snapshot.id
             });
         }
     })
@@ -43,24 +33,15 @@ exports.NotificationOnUnlike = (snapshot) => {
 exports.NotificationOnComment = (snapshot) => {
     db.doc(`/screams/${snapshot.data().screamID}`).get()
     .then(doc =>{
-        if(doc.exists && doc.data().userHandle !== snapshot.data().handle){
+        if(doc.exists && doc.data().userHandle !== snapshot.data().userHandle){
             return db.doc(`/notifications/${snapshot.id}`).set({
                 createdAt : new Date().toISOString(),
                 recepient: doc.data().userHandle,
                 sender: snapshot.data().userHandle,
                 type: 'comment',
                 read: false,
-                screamID: doc.id
-            });
-        }
-        else if(doc.exists && doc.data().userHandle === snapshot.data().handle){
-            return db.doc(`/notifications/${snapshot.id}`).set({
-                createdAt : new Date().toISOString(),
-                recepient: doc.data().userHandle,
-                sender: 'A retard 😬',
-                type: 'comment',
-                read: false,
-                screamID: doc.id
+                screamID: doc.id,
+                notificationID: snapshot.id
             });
         }
         

@@ -21,7 +21,7 @@ exports.validateSignUpData = data => {
     if(data.password !== data.confirmPassword) errors.confirmPassword = "Passwords must match 😡"
 
     if(isEmpty(data.handle)) errors.handle =  angryRes
-
+    if(data.handle.startsWith('@')) errors.handle = 'handle cannot start with @'
     return {
         errors,
         valid: Object.keys(errors).length === 0

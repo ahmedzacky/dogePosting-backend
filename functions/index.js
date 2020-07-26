@@ -5,7 +5,6 @@ const FBAuth = require('./util/fbAuth')
 const { 
     getAllScreams, 
     PostOneScream, 
-    getAllUsers,
     getScream,
     commentOnScream,
     LikeScream,
@@ -72,7 +71,7 @@ app.post('/user', FBAuth, AddUserDetails)
 app.get('/user/:handle', GetUserDetails)
 
 //set notifications as read
-app.get('/notifications', FBAuth, MarkNotificationsRead)
+app.post('/notifications', FBAuth, MarkNotificationsRead)
 
 
 
@@ -92,7 +91,7 @@ exports.createNotificationOnLike = functions
     .firestore
     .document('likes/{id}')
     .onCreate(snapshot => {
-        NotificationOnLike(snapshot)
+        return NotificationOnLike(snapshot)
 })
 
 //remove like notification on unlike
@@ -101,7 +100,7 @@ exports.deleteNotificationOnUnlike = functions
     .firestore
     .document('likes/{id}')
     .onDelete(snapshot => {
-        NotificationOnUnlike(snapshot)
+        return NotificationOnUnlike(snapshot)
 })
 
 //comment notification
@@ -110,7 +109,7 @@ exports.createNotificationOnComment = functions
     .firestore
     .document('comments/{id}')
     .onCreate(snapshot => {
-        NotificationOnComment(snapshot)
+        return NotificationOnComment(snapshot)
 })
 
 //comment notification
@@ -129,7 +128,17 @@ exports.onUserImageChange = functions
                 data.forEach(doc =>{
                     const scream = db.doc(`/screams/${doc.id}`)
                     batch.update(scream, {userImage: change.after.data().imageUrl})
-                })
+                }) 
+                return db
+                .collection('comments')
+                .where('userHandle', '==', change.before.data().handle)
+                .get()
+            })
+            .then(data => {
+                data.forEach(doc =>{
+                    const comment = db.doc(`/comments/${doc.id}`)
+                    batch.update(comment, {userImage: change.after.data().imageUrl})
+                }) 
                 return batch.commit()
             })
         } else return true    
